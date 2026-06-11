@@ -12,14 +12,20 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from "react-native-gesture-handler";
 import Animated, {
   Extrapolation,
   type SharedValue,
   interpolate,
+  runOnJS,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
+  withSpring,
 } from "react-native-reanimated";
 import {
   SafeAreaProvider,
@@ -30,6 +36,8 @@ import StepCard from "./src/components/StepCard";
 import BreathingCircle from "./src/components/BreathingCircle";
 
 const PAGE_COUNT = steps.length;
+
+const SPRING = { damping: 42, stiffness: 400 };
 
 function Dot({
   index,
@@ -71,6 +79,67 @@ function Deck() {
   const [breathingVisible, setBreathingVisible] = useState(false);
   const lastPage = useRef(0);
 
+  const menuHeight = insets.top + 168;
+  const translateY = useSharedValue(0);
+  const menuOpenSV = useSharedValue(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const onMenuToggle = (open: boolean) => {
+    setMenuOpen(open);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const closeMenu = () => {
+    menuOpenSV.value = false;
+    setMenuOpen(false);
+    translateY.value = withSpring(0, SPRING);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const pan = Gesture.Pan()
+    .activeOffsetY([-16, 16])
+    .failOffsetX([-12, 12])
+    .onChange((e) => {
+      const base = menuOpenSV.value ? menuHeight : 0;
+      translateY.value = Math.min(
+        Math.max(base + e.translationY, 0),
+        menuHeight,
+      );
+    })
+    .onEnd((e) => {
+      const open =
+        e.velocityY > 400
+          ? true
+          : e.velocityY < -400
+            ? false
+            : translateY.value > menuHeight / 2;
+      if (open !== menuOpenSV.value) {
+        menuOpenSV.value = open;
+        runOnJS(onMenuToggle)(open);
+      }
+      translateY.value = withSpring(open ? menuHeight : 0, SPRING);
+    });
+
+  const menuStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value - menuHeight }],
+  }));
+
+  const deckStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+    borderTopLeftRadius: interpolate(
+      translateY.value,
+      [0, menuHeight],
+      [0, 28],
+      Extrapolation.CLAMP,
+    ),
+    borderTopRightRadius: interpolate(
+      translateY.value,
+      [0, menuHeight],
+      [0, 28],
+      Extrapolation.CLAMP,
+    ),
+  }));
+
   const scrollHandler = useAnimatedScrollHandler((event) => {
     scrollX.value = event.contentOffset.x;
   });
@@ -85,33 +154,56 @@ function Deck() {
 
   return (
     <View style={styles.root}>
-      <Animated.ScrollView
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onScroll={scrollHandler}
-        onMomentumScrollEnd={onMomentumEnd}
-        scrollEventThrottle={16}
+      <Animated.View
+        style={[
+          styles.menu,
+          { height: menuHeight, paddingTop: insets.top + 16 },
+          menuStyle,
+        ]}
       >
-        {steps.map((step, i) => (
-          <StepCard
-            key={step.id}
-            step={step}
-            index={i}
-            scrollX={scrollX}
-            onBreathe={() => setBreathingVisible(true)}
-          />
-        ))}
-      </Animated.ScrollView>
+        <Text style={styles.menuTitle}>
+          13 шагов из эмоционального флэшбека
+        </Text>
+        <Text style={styles.menuCredit}>
+          По Питу Уокеру, «КПТСР: от выживания к процветанию»
+        </Text>
+      </Animated.View>
 
-      <View
-        style={[styles.pagination, { bottom: insets.bottom + 24 }]}
-        pointerEvents="none"
-      >
-        {Array.from({ length: PAGE_COUNT }).map((_, i) => (
-          <Dot key={i} index={i} scrollX={scrollX} width={width} />
-        ))}
-      </View>
+      <GestureDetector gesture={pan}>
+        <Animated.View style={[styles.deck, deckStyle]}>
+          <Animated.ScrollView
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onScroll={scrollHandler}
+            onMomentumScrollEnd={onMomentumEnd}
+            scrollEventThrottle={16}
+          >
+            {steps.map((step, i) => (
+              <StepCard
+                key={step.id}
+                step={step}
+                index={i}
+                scrollX={scrollX}
+                onBreathe={() => setBreathingVisible(true)}
+              />
+            ))}
+          </Animated.ScrollView>
+
+          <View
+            style={[styles.pagination, { bottom: insets.bottom + 24 }]}
+            pointerEvents="none"
+          >
+            {Array.from({ length: PAGE_COUNT }).map((_, i) => (
+              <Dot key={i} index={i} scrollX={scrollX} width={width} />
+            ))}
+          </View>
+
+          {menuOpen && (
+            <Pressable style={StyleSheet.absoluteFill} onPress={closeMenu} />
+          )}
+        </Animated.View>
+      </GestureDetector>
 
       <Modal
         visible={breathingVisible}
@@ -154,6 +246,30 @@ export default function App() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+    backgroundColor: "#12101f",
+  },
+  menu: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 32,
+    justifyContent: "center",
+    gap: 8,
+  },
+  menuTitle: {
+    fontSize: 17,
+    fontWeight: "600",
+    color: "rgba(255,255,255,0.9)",
+  },
+  menuCredit: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: "rgba(255,255,255,0.45)",
+  },
+  deck: {
+    flex: 1,
+    overflow: "hidden",
     backgroundColor: "#12101f",
   },
   pagination: {
