@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import {
-  Modal,
   NativeScrollEvent,
   NativeSyntheticEvent,
   Pressable,
@@ -28,6 +27,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  withTiming,
 } from "react-native-reanimated";
 import {
   SafeAreaProvider,
@@ -86,7 +86,22 @@ function Deck() {
     useLocale();
   const scrollX = useSharedValue(0);
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
-  const [breathingVisible, setBreathingVisible] = useState(false);
+  // Breathing screen is an in-tree overlay (not a native Modal), so gestures
+  // underneath resume the moment it fades out. It mounts only while open, which
+  // stops BreathingCircle's animation/timers/haptics when closed.
+  const [breathingMounted, setBreathingMounted] = useState(false);
+  const breathingOpacity = useSharedValue(0);
+
+  const openBreathing = () => {
+    setBreathingMounted(true);
+    breathingOpacity.value = withTiming(1, { duration: 280 });
+  };
+
+  const closeBreathing = () => {
+    breathingOpacity.value = withTiming(0, { duration: 220 }, (finished) => {
+      if (finished) runOnJS(setBreathingMounted)(false);
+    });
+  };
   const lastPage = useRef(0);
   const [stripWidth, setStripWidth] = useState(1);
   const scrubPage = useSharedValue(-1);
@@ -200,6 +215,10 @@ function Deck() {
     }
   };
 
+  const breathingStyle = useAnimatedStyle(() => ({
+    opacity: breathingOpacity.value,
+  }));
+
   return (
     <View style={styles.root}>
       <Animated.View
@@ -310,7 +329,7 @@ function Deck() {
                 step={step}
                 index={i}
                 scrollX={scrollX}
-                onBreathe={() => setBreathingVisible(true)}
+                onBreathe={openBreathing}
               />
             ))}
           </Animated.ScrollView>
@@ -336,13 +355,8 @@ function Deck() {
         </Animated.View>
       </GestureDetector>
 
-      <Modal
-        visible={breathingVisible}
-        animationType="fade"
-        transparent={false}
-        onRequestClose={() => setBreathingVisible(false)}
-      >
-        <View style={styles.breathingScreen}>
+      {breathingMounted && (
+        <Animated.View style={[styles.breathingScreen, breathingStyle]}>
           <LinearGradient
             colors={["#163a72", "#0d2a55"]}
             start={{ x: 0, y: 0 }}
@@ -351,13 +365,13 @@ function Deck() {
           />
           <BreathingCircle />
           <Pressable
-            onPress={() => setBreathingVisible(false)}
+            onPress={closeBreathing}
             style={[styles.closeButton, { bottom: insets.bottom + 32 }]}
           >
             <Text style={styles.closeText}>{t.close}</Text>
           </Pressable>
-        </View>
-      </Modal>
+        </Animated.View>
+      )}
 
       <StatusBar style="light" />
     </View>
@@ -463,7 +477,12 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.9)",
   },
   breathingScreen: {
-    flex: 1,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 10,
   },
   closeButton: {
     position: "absolute",
