@@ -37,7 +37,7 @@ import { stepMeta } from "./src/data/steps";
 import StepCard from "./src/components/StepCard";
 import BreathingCircle from "./src/components/BreathingCircle";
 import { LocaleProvider, useLocale } from "./src/i18n/LocaleProvider";
-import { LANGUAGES, LANGUAGE_NAMES } from "./src/i18n/translations";
+import { LANGUAGES } from "./src/i18n/translations";
 
 const PAGE_COUNT = stepMeta.length;
 
@@ -208,9 +208,11 @@ function Deck() {
           menuStyle,
         ]}
       >
-        <Text style={styles.menuTitle}>{t.menuTitle}</Text>
-        <Text style={styles.menuCredit}>{t.menuCredit}</Text>
-        <View style={styles.langRow}>
+        <View style={styles.menuText}>
+          <Text style={styles.menuTitle}>{t.menuTitle}</Text>
+          <Text style={styles.menuCredit}>{t.menuCredit}</Text>
+        </View>
+        <View style={styles.segment}>
           {LANGUAGES.map((lang) => {
             const active = lang === language;
             return (
@@ -222,12 +224,15 @@ function Deck() {
                     Haptics.selectionAsync();
                   }
                 }}
-                style={[styles.langPill, active && styles.langPillActive]}
+                style={[styles.segmentItem, active && styles.segmentItemActive]}
               >
                 <Text
-                  style={[styles.langText, active && styles.langTextActive]}
+                  style={[
+                    styles.segmentText,
+                    active && styles.segmentTextActive,
+                  ]}
                 >
-                  {LANGUAGE_NAMES[lang]}
+                  {lang.toUpperCase()}
                 </Text>
               </Pressable>
             );
@@ -344,7 +349,10 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     paddingHorizontal: 32,
-    justifyContent: "center",
+    paddingBottom: 22,
+    justifyContent: "space-between",
+  },
+  menuText: {
     gap: 8,
   },
   menuTitle: {
@@ -357,26 +365,29 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: "rgba(255,255,255,0.45)",
   },
-  langRow: {
+  segment: {
     flexDirection: "row",
-    gap: 8,
-    marginTop: 4,
-  },
-  langPill: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 18,
+    alignSelf: "flex-start",
+    padding: 3,
+    borderRadius: 12,
     backgroundColor: "rgba(255,255,255,0.08)",
   },
-  langPillActive: {
-    backgroundColor: "rgba(255,255,255,0.18)",
+  segmentItem: {
+    minWidth: 46,
+    paddingVertical: 7,
+    alignItems: "center",
+    borderRadius: 9,
   },
-  langText: {
+  segmentItemActive: {
+    backgroundColor: "rgba(255,255,255,0.2)",
+  },
+  segmentText: {
     fontSize: 13,
     fontWeight: "600",
+    letterSpacing: 0.5,
     color: "rgba(255,255,255,0.5)",
   },
-  langTextActive: {
+  segmentTextActive: {
     color: "rgba(255,255,255,0.95)",
   },
   deck: {
