@@ -15,8 +15,8 @@ import * as Haptics from "expo-haptics";
 import { useLocale } from "../i18n/LocaleProvider";
 
 const INHALE_MS = 4000;
-const HOLD_MS = 2000;
-const EXHALE_MS = 6000;
+const HOLD_MS = 4000;
+const EXHALE_MS = 8000;
 
 const PETAL_COUNT = 6;
 const PETAL_SIZE = 110;
