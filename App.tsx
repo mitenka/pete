@@ -33,11 +33,13 @@ import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { steps } from "./src/data/steps";
+import { stepMeta } from "./src/data/steps";
 import StepCard from "./src/components/StepCard";
 import BreathingCircle from "./src/components/BreathingCircle";
+import { LocaleProvider, useLocale } from "./src/i18n/LocaleProvider";
+import { LANGUAGES, LANGUAGE_NAMES } from "./src/i18n/translations";
 
-const PAGE_COUNT = steps.length;
+const PAGE_COUNT = stepMeta.length;
 
 const SPRING = { damping: 42, stiffness: 400 };
 
@@ -80,6 +82,7 @@ function Dot({
 function Deck() {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
+  const { t, language, setLanguage, steps } = useLocale();
   const scrollX = useSharedValue(0);
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const [breathingVisible, setBreathingVisible] = useState(false);
@@ -123,7 +126,7 @@ function Deck() {
 
   const dotsGesture = Gesture.Exclusive(dotsPan, dotsTap);
 
-  const menuHeight = insets.top + 168;
+  const menuHeight = insets.top + 232;
   const translateY = useSharedValue(0);
   const menuOpenSV = useSharedValue(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -205,12 +208,31 @@ function Deck() {
           menuStyle,
         ]}
       >
-        <Text style={styles.menuTitle}>
-          13 шагов из эмоционального флэшбека
-        </Text>
-        <Text style={styles.menuCredit}>
-          По Питу Уокеру, «КПТСР: от выживания к процветанию»
-        </Text>
+        <Text style={styles.menuTitle}>{t.menuTitle}</Text>
+        <Text style={styles.menuCredit}>{t.menuCredit}</Text>
+        <View style={styles.langRow}>
+          {LANGUAGES.map((lang) => {
+            const active = lang === language;
+            return (
+              <Pressable
+                key={lang}
+                onPress={() => {
+                  if (!active) {
+                    setLanguage(lang);
+                    Haptics.selectionAsync();
+                  }
+                }}
+                style={[styles.langPill, active && styles.langPillActive]}
+              >
+                <Text
+                  style={[styles.langText, active && styles.langTextActive]}
+                >
+                  {LANGUAGE_NAMES[lang]}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
       </Animated.View>
 
       <GestureDetector gesture={pan}>
@@ -289,7 +311,7 @@ function Deck() {
             onPress={() => setBreathingVisible(false)}
             style={[styles.closeButton, { bottom: insets.bottom + 32 }]}
           >
-            <Text style={styles.closeText}>Закрыть</Text>
+            <Text style={styles.closeText}>{t.close}</Text>
           </Pressable>
         </View>
       </Modal>
@@ -303,7 +325,9 @@ export default function App() {
   return (
     <GestureHandlerRootView style={styles.root}>
       <SafeAreaProvider>
-        <Deck />
+        <LocaleProvider>
+          <Deck />
+        </LocaleProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
@@ -332,6 +356,28 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     color: "rgba(255,255,255,0.45)",
+  },
+  langRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginTop: 4,
+  },
+  langPill: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 18,
+    backgroundColor: "rgba(255,255,255,0.08)",
+  },
+  langPillActive: {
+    backgroundColor: "rgba(255,255,255,0.18)",
+  },
+  langText: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "rgba(255,255,255,0.5)",
+  },
+  langTextActive: {
+    color: "rgba(255,255,255,0.95)",
   },
   deck: {
     flex: 1,

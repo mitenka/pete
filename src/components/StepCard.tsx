@@ -7,6 +7,7 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 import { Step } from '../data/steps';
+import { useLocale } from '../i18n/LocaleProvider';
 
 interface Props {
   step: Step;
@@ -17,6 +18,7 @@ interface Props {
 
 export default function StepCard({ step, index, scrollX, onBreathe }: Props) {
   const { width } = useWindowDimensions();
+  const { t } = useLocale();
 
   const contentStyle = useAnimatedStyle(() => {
     const input = [(index - 1) * width, index * width, (index + 1) * width];
@@ -58,7 +60,7 @@ export default function StepCard({ step, index, scrollX, onBreathe }: Props) {
             onPress={onBreathe}
             style={({ pressed }) => [styles.breatheButton, pressed && styles.breathePressed]}
           >
-            <Text style={styles.breatheText}>Подышать вместе</Text>
+            <Text style={styles.breatheText}>{t.breathe}</Text>
           </Pressable>
         )}
       </Animated.View>

@@ -10,6 +10,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
+import { useLocale } from "../i18n/LocaleProvider";
 
 const INHALE_MS = 4000;
 const HOLD_MS = 2000;
@@ -23,12 +24,6 @@ const RING_SIZE = PETAL_SIZE + TRAVEL * 2 + 14;
 const ROTATION_MS = 90000;
 
 type Phase = "inhale" | "hold" | "exhale";
-
-const LABELS: Record<Phase, string> = {
-  inhale: "Вдох",
-  hold: "Пауза",
-  exhale: "Выдох",
-};
 
 function Petal({
   index,
@@ -49,6 +44,12 @@ function Petal({
 }
 
 export default function BreathingCircle() {
+  const { t } = useLocale();
+  const labels: Record<Phase, string> = {
+    inhale: t.inhale,
+    hold: t.hold,
+    exhale: t.exhale,
+  };
   const progress = useSharedValue(0);
   const rotation = useSharedValue(0);
   const labelProgress = useSharedValue(1);
@@ -126,7 +127,7 @@ export default function BreathingCircle() {
         <Animated.View style={[styles.core, coreStyle]} />
       </View>
       <Animated.Text style={[styles.label, labelStyle]}>
-        {LABELS[phase]}
+        {labels[phase]}
       </Animated.Text>
     </View>
   );
