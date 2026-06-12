@@ -37,7 +37,7 @@ import { stepMeta } from "./src/data/steps";
 import StepCard from "./src/components/StepCard";
 import BreathingCircle from "./src/components/BreathingCircle";
 import { LocaleProvider, useLocale } from "./src/i18n/LocaleProvider";
-import { LANGUAGES } from "./src/i18n/translations";
+import { GENDERS, GENDER_LABELS, LANGUAGES } from "./src/i18n/translations";
 
 const PAGE_COUNT = stepMeta.length;
 
@@ -82,7 +82,8 @@ function Dot({
 function Deck() {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const { t, language, setLanguage, steps } = useLocale();
+  const { t, language, setLanguage, gender, setGender, gendered, steps } =
+    useLocale();
   const scrollX = useSharedValue(0);
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const [breathingVisible, setBreathingVisible] = useState(false);
@@ -212,31 +213,68 @@ function Deck() {
           <Text style={styles.menuTitle}>{t.menuTitle}</Text>
           <Text style={styles.menuCredit}>{t.menuCredit}</Text>
         </View>
-        <View style={styles.segment}>
-          {LANGUAGES.map((lang) => {
-            const active = lang === language;
-            return (
-              <Pressable
-                key={lang}
-                onPress={() => {
-                  if (!active) {
-                    setLanguage(lang);
-                    Haptics.selectionAsync();
-                  }
-                }}
-                style={[styles.segmentItem, active && styles.segmentItemActive]}
-              >
-                <Text
+        <View style={styles.controls}>
+          <View style={styles.segment}>
+            {LANGUAGES.map((lang) => {
+              const active = lang === language;
+              return (
+                <Pressable
+                  key={lang}
+                  onPress={() => {
+                    if (!active) {
+                      setLanguage(lang);
+                      Haptics.selectionAsync();
+                    }
+                  }}
                   style={[
-                    styles.segmentText,
-                    active && styles.segmentTextActive,
+                    styles.segmentItem,
+                    active && styles.segmentItemActive,
                   ]}
                 >
-                  {lang.toUpperCase()}
-                </Text>
-              </Pressable>
-            );
-          })}
+                  <Text
+                    style={[
+                      styles.segmentText,
+                      active && styles.segmentTextActive,
+                    ]}
+                  >
+                    {lang.toUpperCase()}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          {gendered && (
+            <View style={styles.segment}>
+              {GENDERS.map((g) => {
+                const active = g === gender;
+                return (
+                  <Pressable
+                    key={g}
+                    onPress={() => {
+                      if (!active) {
+                        setGender(g);
+                        Haptics.selectionAsync();
+                      }
+                    }}
+                    style={[
+                      styles.segmentItem,
+                      active && styles.segmentItemActive,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.segmentText,
+                        active && styles.segmentTextActive,
+                      ]}
+                    >
+                      {GENDER_LABELS[language][g]}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          )}
         </View>
       </Animated.View>
 
@@ -364,6 +402,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     color: "rgba(255,255,255,0.45)",
+  },
+  controls: {
+    flexDirection: "row",
+    gap: 10,
   },
   segment: {
     flexDirection: "row",

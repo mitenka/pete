@@ -152,7 +152,7 @@ export const stepText: Record<Language, StepText[]> = {
     {
       title: "Признай своё право на границы",
       body: [
-        "Напомни себе: ты не обязан(а) позволять кому-либо плохо с тобой обращаться.",
+        "Напомни себе: ты не {обязан|обязана} позволять кому-либо плохо с тобой обращаться.",
         "Ты можешь покидать опасные ситуации и протестовать против несправедливого обращения.",
       ],
     },
@@ -174,7 +174,7 @@ export const stepText: Record<Language, StepText[]> = {
       title: "Ты — во взрослом теле",
       body: [
         "У тебя есть союзники, навыки и ресурсы, чтобы защитить себя. Их не было в детстве.",
-        "Ощущение себя маленьким(ой) и хрупким(ой) — признак флэшбека, а не реальность.",
+        "Ощущение себя {маленьким|маленькой} и {хрупким|хрупкой} — признак флэшбека, а не реальность.",
       ],
     },
     {
@@ -207,7 +207,7 @@ export const stepText: Record<Language, StepText[]> = {
       title: "Не оставайся в одиночестве слишком долго",
       body: [
         "Побыть наедине с собой — нормально. Но не позволяй стыду изолировать тебя.",
-        "Чувствовать стыд не значит быть постыдным(ой).",
+        "Чувствовать стыд не значит быть {постыдным|постыдной}.",
         "Расскажи близким о флэшбеках, попроси помочь проговорить и прочувствовать их.",
       ],
     },
@@ -226,7 +226,7 @@ export const stepText: Record<Language, StepText[]> = {
       ],
     },
     {
-      title: "Будь терпелив(а) к себе",
+      title: "Будь {терпелив|терпелива} к себе",
       body: [
         "Восстановление — медленный процесс. Телу нужно время в настоящем, чтобы адреналин ушёл.",
         "Не ругай себя за то, что у тебя был флэшбек. Это не откат назад — это часть пути.",
@@ -273,7 +273,7 @@ export const stepText: Record<Language, StepText[]> = {
       title: "Ti si u odraslom telu",
       body: [
         "Imaš saveznike, veštine i resurse da se zaštitiš — kojih u detinjstvu nije bilo.",
-        "Osećaj da si mali i krhak znak je flešbeka, a ne stvarnost.",
+        "Osećaj da si {mali|mala} i {krhak|krhka} znak je flešbeka, a ne stvarnost.",
       ],
     },
     {
@@ -306,7 +306,7 @@ export const stepText: Record<Language, StepText[]> = {
       title: "Ne ostaj predugo sam",
       body: [
         "Sasvim je u redu provesti vreme nasamo. Ali ne dozvoli da te stid izoluje.",
-        "Osećati stid ne znači biti sraman.",
+        "Osećati stid ne znači biti {sraman|sramna}.",
         "Reci bliskima o flešbekovima, zamoli ih da ti pomognu da ih izgovoriš i proživiš.",
       ],
     },
@@ -325,10 +325,10 @@ export const stepText: Record<Language, StepText[]> = {
       ],
     },
     {
-      title: "Budi strpljiv prema sebi",
+      title: "Budi {strpljiv|strpljiva} prema sebi",
       body: [
         "Oporavak je spor proces. Telu treba vreme u sadašnjosti da adrenalin nestane.",
-        "Ne grdi sebe što si imao flešbek. To nije nazadovanje — to je deo puta.",
+        "Ne grdi sebe što si {imao|imala} flešbek. To nije nazadovanje — to je deo puta.",
       ],
     },
   ],

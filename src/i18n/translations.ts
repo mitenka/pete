@@ -11,6 +11,36 @@ export const LANGUAGE_NAMES: Record<Language, string> = {
   sr: "Srpski",
 };
 
+// Grammatical gender for verb/adjective agreement in Russian and Serbian.
+// English is genderless, so the gender control is hidden there.
+export type Gender = "m" | "f";
+
+export const GENDERS = ["m", "f"] as const;
+
+export const DEFAULT_GENDER: Gender = "f";
+
+const GENDERED_LANGUAGES: ReadonlySet<Language> = new Set(["ru", "sr"]);
+
+export function isGendered(lang: Language): boolean {
+  return GENDERED_LANGUAGES.has(lang);
+}
+
+// Two-letter-ish labels shown in the gender segmented control, per language.
+export const GENDER_LABELS: Record<Language, Record<Gender, string>> = {
+  en: { m: "M", f: "F" },
+  ru: { m: "М", f: "Ж" },
+  sr: { m: "M", f: "Ž" },
+};
+
+// Resolves inline gender markers like "{обязан|обязана}" to the masculine
+// (first) or feminine (second) form. Text without markers passes through
+// unchanged, so English strings are unaffected.
+export function resolveGender(text: string, gender: Gender): string {
+  return text.replace(/\{([^|{}]*)\|([^|{}]*)\}/g, (_, masc, fem) =>
+    gender === "m" ? masc : fem,
+  );
+}
+
 export interface UIStrings {
   menuTitle: string;
   menuCredit: string;
