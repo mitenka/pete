@@ -4,9 +4,11 @@ import Animated, {
   Easing,
   type SharedValue,
   interpolate,
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
+  withSequence,
   withTiming,
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
@@ -52,7 +54,7 @@ export default function BreathingCircle() {
   };
   const progress = useSharedValue(0);
   const rotation = useSharedValue(0);
-  const labelProgress = useSharedValue(1);
+  const labelOpacity = useSharedValue(0);
   const [phase, setPhase] = useState<Phase>("inhale");
 
   useEffect(() => {
@@ -68,12 +70,18 @@ export default function BreathingCircle() {
 
     const run = (current: Phase) => {
       if (cancelled) return;
-      setPhase(current);
-      labelProgress.value = 0;
-      labelProgress.value = withTiming(1, {
-        duration: 700,
-        easing: Easing.out(Easing.quad),
-      });
+      // Fade the previous word out and down, swap the text while it's invisible,
+      // then float the new word up into place — no hard cut between phases.
+      labelOpacity.value = withSequence(
+        withTiming(
+          0,
+          { duration: 220, easing: Easing.in(Easing.cubic) },
+          (finished) => {
+            if (finished) runOnJS(setPhase)(current);
+          },
+        ),
+        withTiming(1, { duration: 380, easing: Easing.out(Easing.cubic) }),
+      );
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       if (current === "inhale") {
         progress.value = withTiming(1, {
@@ -109,9 +117,9 @@ export default function BreathingCircle() {
   }));
 
   const labelStyle = useAnimatedStyle(() => ({
-    opacity: labelProgress.value,
+    opacity: labelOpacity.value,
     transform: [
-      { translateY: interpolate(labelProgress.value, [0, 1], [8, 0]) },
+      { translateY: interpolate(labelOpacity.value, [0, 1], [6, 0]) },
     ],
   }));
 
