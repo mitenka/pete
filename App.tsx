@@ -22,6 +22,8 @@ import Animated, {
   type SharedValue,
   interpolate,
   runOnJS,
+  scrollTo,
+  useAnimatedRef,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
@@ -38,6 +40,9 @@ import BreathingCircle from "./src/components/BreathingCircle";
 const PAGE_COUNT = steps.length;
 
 const SPRING = { damping: 42, stiffness: 400 };
+
+const DOTS_PAD_H = 28;
+const DOTS_PAD_V = 18;
 
 function Dot({
   index,
@@ -76,8 +81,47 @@ function Deck() {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const scrollX = useSharedValue(0);
+  const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const [breathingVisible, setBreathingVisible] = useState(false);
   const lastPage = useRef(0);
+  const [stripWidth, setStripWidth] = useState(1);
+  const scrubPage = useSharedValue(-1);
+
+  const tickPage = (page: number) => {
+    lastPage.current = page;
+    Haptics.selectionAsync();
+  };
+
+  const dotsPan = Gesture.Pan()
+    .activeOffsetX([-2, 2])
+    .failOffsetY([-14, 14])
+    .onChange((e) => {
+      const page = Math.min(
+        PAGE_COUNT - 1,
+        Math.max(0, Math.floor(((e.x - DOTS_PAD_H) / stripWidth) * PAGE_COUNT)),
+      );
+      if (page !== scrubPage.value) {
+        scrubPage.value = page;
+        scrollTo(scrollRef, page * width, 0, false);
+        runOnJS(tickPage)(page);
+      }
+    })
+    .onEnd(() => {
+      scrubPage.value = -1;
+    });
+
+  const dotsTap = Gesture.Tap()
+    .maxDuration(10000)
+    .onEnd((e) => {
+      const page = Math.min(
+        PAGE_COUNT - 1,
+        Math.max(0, Math.floor(((e.x - DOTS_PAD_H) / stripWidth) * PAGE_COUNT)),
+      );
+      scrollTo(scrollRef, page * width, 0, true);
+      runOnJS(tickPage)(page);
+    });
+
+  const dotsGesture = Gesture.Exclusive(dotsPan, dotsTap);
 
   const menuHeight = insets.top + 168;
   const translateY = useSharedValue(0);
@@ -172,6 +216,7 @@ function Deck() {
       <GestureDetector gesture={pan}>
         <Animated.View style={[styles.deck, deckStyle]}>
           <Animated.ScrollView
+            ref={scrollRef}
             horizontal
             pagingEnabled
             showsHorizontalScrollIndicator={false}
@@ -205,13 +250,19 @@ function Deck() {
             ))}
           </Animated.ScrollView>
 
-          <View
-            style={[styles.pagination, { bottom: insets.bottom + 24 }]}
-            pointerEvents="none"
-          >
-            {Array.from({ length: PAGE_COUNT }).map((_, i) => (
-              <Dot key={i} index={i} scrollX={scrollX} width={width} />
-            ))}
+          <View style={[styles.pagination, { bottom: insets.bottom + 6 }]}>
+            <GestureDetector gesture={dotsGesture}>
+              <View style={styles.dotsTouch}>
+                <View
+                  style={styles.dotsRow}
+                  onLayout={(e) => setStripWidth(e.nativeEvent.layout.width)}
+                >
+                  {Array.from({ length: PAGE_COUNT }).map((_, i) => (
+                    <Dot key={i} index={i} scrollX={scrollX} width={width} />
+                  ))}
+                </View>
+              </View>
+            </GestureDetector>
           </View>
 
           {menuOpen && (
@@ -296,8 +347,14 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     right: 0,
+    alignItems: "center",
+  },
+  dotsTouch: {
+    paddingHorizontal: DOTS_PAD_H,
+    paddingVertical: DOTS_PAD_V,
+  },
+  dotsRow: {
     flexDirection: "row",
-    justifyContent: "center",
     gap: 8,
   },
   dot: {
