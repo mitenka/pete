@@ -179,6 +179,21 @@ function Deck() {
             onMomentumScrollEnd={onMomentumEnd}
             scrollEventThrottle={16}
           >
+            <LinearGradient
+              colors={steps[0].gradient}
+              start={{ x: 1, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={[styles.overscrollFill, { width, left: -width }]}
+            />
+            <LinearGradient
+              colors={steps[steps.length - 1].gradient}
+              start={{ x: 1, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={[
+                styles.overscrollFill,
+                { width, left: PAGE_COUNT * width },
+              ]}
+            />
             {steps.map((step, i) => (
               <StepCard
                 key={step.id}
@@ -271,6 +286,11 @@ const styles = StyleSheet.create({
     flex: 1,
     overflow: "hidden",
     backgroundColor: "#12101f",
+  },
+  overscrollFill: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
   },
   pagination: {
     position: "absolute",
