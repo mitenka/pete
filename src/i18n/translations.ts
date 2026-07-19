@@ -63,8 +63,8 @@ export const ui: Record<Language, UIStrings> = {
     exhale: "Exhale",
   },
   ru: {
-    menuTitle: "13 шагов из эмоционального флэшбека",
-    menuCredit: "По Питу Уокеру, «КПТСР: от выживания к процветанию»",
+    menuTitle: "13 шагов из эмоционального флэшбека",
+    menuCredit: "По Питу Уокеру, «КПТСР: от выживания к процветанию»",
     breathe: "Подышать вместе",
     close: "Закрыть",
     inhale: "Вдох",
