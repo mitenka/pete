@@ -45,6 +45,8 @@ export interface UIStrings {
   menuTitle: string;
   menuCredit: string;
   breathe: string;
+  rightsButton: string;
+  needsButton: string;
   close: string;
   inhale: string;
   hold: string;
@@ -57,6 +59,8 @@ export const ui: Record<Language, UIStrings> = {
     menuTitle: "13 steps out of an emotional flashback",
     menuCredit: "After Pete Walker, “Complex PTSD: From Surviving to Thriving”",
     breathe: "Breathe together",
+    rightsButton: "My rights",
+    needsButton: "My needs",
     close: "Close",
     inhale: "Inhale",
     hold: "Hold",
@@ -66,6 +70,8 @@ export const ui: Record<Language, UIStrings> = {
     menuTitle: "13 шагов из эмоционального флэшбека",
     menuCredit: "По Питу Уокеру, «КПТСР: от выживания к процветанию»",
     breathe: "Подышать вместе",
+    rightsButton: "Мои права",
+    needsButton: "Мои потребности",
     close: "Закрыть",
     inhale: "Вдох",
     hold: "Пауза",
@@ -75,6 +81,8 @@ export const ui: Record<Language, UIStrings> = {
     menuTitle: "13 koraka iz emocionalnog flešbeka",
     menuCredit: "Po Pitu Vokeru, „Kompleksni PTSP: od preživljavanja do napredovanja“",
     breathe: "Diši zajedno",
+    rightsButton: "Moja prava",
+    needsButton: "Moje potrebe",
     close: "Zatvori",
     inhale: "Udah",
     hold: "Pauza",

@@ -21,6 +21,7 @@ import {
   type UIStrings,
 } from "./translations";
 import { stepMeta, stepText, type Step } from "../data/steps";
+import { overlayLists, type OverlayList } from "../data/overlayLists";
 
 const STORAGE_KEY_LANGUAGE = "app.language";
 const STORAGE_KEY_GENDER = "app.gender";
@@ -51,6 +52,7 @@ interface LocaleContextValue {
   gendered: boolean;
   t: UIStrings;
   steps: Step[];
+  overlays: Record<"rights" | "needs", OverlayList>;
 }
 
 const LocaleContext = createContext<LocaleContextValue | null>(null);
@@ -102,6 +104,10 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
           body: text.body.map(g),
         };
       }),
+      overlays: {
+        rights: { items: overlayLists[language].rights.items.map(g) },
+        needs: { items: overlayLists[language].needs.items.map(g) },
+      },
     };
   }, [language, gender]);
 

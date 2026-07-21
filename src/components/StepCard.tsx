@@ -6,19 +6,31 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
 } from 'react-native-reanimated';
-import { Step } from '../data/steps';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { OverlayKind, Step } from '../data/steps';
 import { useLocale } from '../i18n/LocaleProvider';
 
 interface Props {
   step: Step;
   index: number;
   scrollX: SharedValue<number>;
-  onBreathe: () => void;
+  onOpenOverlay: (kind: OverlayKind) => void;
 }
 
-export default function StepCard({ step, index, scrollX, onBreathe }: Props) {
+// Kept in sync with the breatheButton/breatheText styles below: the button is
+// absolutely positioned over the card, so cards that have one reserve
+// BUTTON_CLEARANCE of bottom padding (plus the safe-area inset the button
+// rides on) to keep long body text from running underneath it.
+const BUTTON_PADDING_V = 14;
+const BUTTON_LINE_HEIGHT = 20;
+const BUTTON_HEIGHT = BUTTON_PADDING_V * 2 + BUTTON_LINE_HEIGHT;
+const BUTTON_BOTTOM = 64;
+const BUTTON_CLEARANCE = BUTTON_BOTTOM + BUTTON_HEIGHT + 24;
+
+export default function StepCard({ step, index, scrollX, onOpenOverlay }: Props) {
   const { width } = useWindowDimensions();
   const { t } = useLocale();
+  const insets = useSafeAreaInsets();
 
   const contentStyle = useAnimatedStyle(() => {
     const input = [(index - 1) * width, index * width, (index + 1) * width];
@@ -45,7 +57,13 @@ export default function StepCard({ step, index, scrollX, onBreathe }: Props) {
         end={{ x: 1, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
-      <Animated.View style={[styles.content, contentStyle]}>
+      <Animated.View
+        style={[
+          styles.content,
+          step.overlay && { paddingBottom: insets.bottom + BUTTON_CLEARANCE },
+          contentStyle,
+        ]}
+      >
         <Text style={styles.number}>{step.id}</Text>
         <Text style={styles.title}>{step.title}</Text>
         <View style={styles.bodyBlock}>
@@ -55,12 +73,18 @@ export default function StepCard({ step, index, scrollX, onBreathe }: Props) {
             </Text>
           ))}
         </View>
-        {step.breathing && (
+        {step.overlay && (
           <Pressable
-            onPress={onBreathe}
-            style={({ pressed }) => [styles.breatheButton, pressed && styles.breathePressed]}
+            onPress={() => onOpenOverlay(step.overlay!)}
+            style={({ pressed }) => [
+              styles.breatheButton,
+              { bottom: insets.bottom + BUTTON_BOTTOM },
+              pressed && styles.breathePressed,
+            ]}
           >
-            <Text style={styles.breatheText}>{t.breathe}</Text>
+            <Text style={styles.breatheText}>
+              {{ breathing: t.breathe, rights: t.rightsButton, needs: t.needsButton }[step.overlay]}
+            </Text>
           </Pressable>
         )}
       </Animated.View>
@@ -101,10 +125,10 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.78)',
   },
   breatheButton: {
-    marginTop: 28,
-    alignSelf: 'flex-start',
+    position: 'absolute',
+    left: 32,
     paddingHorizontal: 24,
-    paddingVertical: 14,
+    paddingVertical: BUTTON_PADDING_V,
     borderRadius: 28,
     backgroundColor: 'rgba(255,255,255,0.16)',
     borderWidth: 1,
@@ -115,6 +139,7 @@ const styles = StyleSheet.create({
   },
   breatheText: {
     fontSize: 16,
+    lineHeight: BUTTON_LINE_HEIGHT,
     fontWeight: '600',
     color: 'rgba(255,255,255,0.95)',
   },

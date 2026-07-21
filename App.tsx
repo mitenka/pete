@@ -1,5 +1,6 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
+  BackHandler,
   NativeScrollEvent,
   NativeSyntheticEvent,
   Pressable,
@@ -33,9 +34,10 @@ import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { stepMeta } from "./src/data/steps";
+import { stepMeta, type OverlayKind } from "./src/data/steps";
 import StepCard from "./src/components/StepCard";
 import BreathingCircle from "./src/components/BreathingCircle";
+import ListOverlay from "./src/components/ListOverlay";
 import { LocaleProvider, useLocale } from "./src/i18n/LocaleProvider";
 import { GENDERS, GENDER_LABELS, LANGUAGES } from "./src/i18n/translations";
 
@@ -45,6 +47,17 @@ const SPRING = { damping: 42, stiffness: 400 };
 
 const DOTS_PAD_H = 28;
 const DOTS_PAD_V = 18;
+
+// Kept in sync with the closeButton/closeText styles below so ListOverlay
+// can reserve exactly enough scroll clearance from the very first render —
+// measuring it at runtime via onLayout raced with the initial paint (worst
+// on Android, where insets.bottom is often 0) and left text peeking through
+// the button.
+const CLOSE_BUTTON_PADDING_V = 12;
+const CLOSE_BUTTON_LINE_HEIGHT = 20;
+const CLOSE_BUTTON_HEIGHT = CLOSE_BUTTON_PADDING_V * 2 + CLOSE_BUTTON_LINE_HEIGHT;
+const CLOSE_BUTTON_BOTTOM = 32;
+const CLOSE_BUTTON_MARGIN = 32;
 
 function Dot({
   index,
@@ -82,26 +95,40 @@ function Dot({
 function Deck() {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const { t, language, setLanguage, gender, setGender, gendered, steps } =
+  const { t, language, setLanguage, gender, setGender, gendered, steps, overlays } =
     useLocale();
   const scrollX = useSharedValue(0);
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
-  // Breathing screen is an in-tree overlay (not a native Modal), so gestures
-  // underneath resume the moment it fades out. It mounts only while open, which
-  // stops BreathingCircle's animation/timers/haptics when closed.
-  const [breathingMounted, setBreathingMounted] = useState(false);
-  const breathingOpacity = useSharedValue(0);
+  // The overlay (breathing / rights / needs) is an in-tree view (not a native
+  // Modal), so gestures underneath resume the moment it fades out. It mounts
+  // only while open, which stops BreathingCircle's animation/timers/haptics
+  // when closed.
+  const [overlay, setOverlay] = useState<OverlayKind | null>(null);
+  const overlayOpacity = useSharedValue(0);
 
-  const openBreathing = () => {
-    setBreathingMounted(true);
-    breathingOpacity.value = withTiming(1, { duration: 280 });
+  const openOverlay = (kind: OverlayKind) => {
+    setOverlay(kind);
+    overlayOpacity.value = withTiming(1, { duration: 280 });
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
-  const closeBreathing = () => {
-    breathingOpacity.value = withTiming(0, { duration: 220 }, (finished) => {
-      if (finished) runOnJS(setBreathingMounted)(false);
+  const closeOverlay = () => {
+    overlayOpacity.value = withTiming(0, { duration: 220 }, (finished) => {
+      if (finished) runOnJS(setOverlay)(null);
     });
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
+
+  // Android hardware back closes the overlay instead of backgrounding the app.
+  useEffect(() => {
+    if (!overlay) return;
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      closeOverlay();
+      return true;
+    });
+    return () => sub.remove();
+  }, [overlay]);
+
   const lastPage = useRef(0);
   const [stripWidth, setStripWidth] = useState(1);
   const scrubPage = useSharedValue(-1);
@@ -215,8 +242,8 @@ function Deck() {
     }
   };
 
-  const breathingStyle = useAnimatedStyle(() => ({
-    opacity: breathingOpacity.value,
+  const overlayStyle = useAnimatedStyle(() => ({
+    opacity: overlayOpacity.value,
   }));
 
   return (
@@ -329,7 +356,7 @@ function Deck() {
                 step={step}
                 index={i}
                 scrollX={scrollX}
-                onBreathe={openBreathing}
+                onOpenOverlay={openOverlay}
               />
             ))}
           </Animated.ScrollView>
@@ -355,18 +382,35 @@ function Deck() {
         </Animated.View>
       </GestureDetector>
 
-      {breathingMounted && (
-        <Animated.View style={[styles.breathingScreen, breathingStyle]}>
-          <LinearGradient
-            colors={["#163a72", "#0d2a55"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={StyleSheet.absoluteFill}
-          />
-          <BreathingCircle />
+      {overlay && (
+        <Animated.View style={[styles.overlayScreen, overlayStyle]}>
+          {overlay === "breathing" ? (
+            <>
+              <LinearGradient
+                colors={steps.find((s) => s.overlay === overlay)!.gradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={StyleSheet.absoluteFill}
+              />
+              <BreathingCircle />
+            </>
+          ) : (
+            <ListOverlay
+              title={overlay === "rights" ? t.rightsButton : t.needsButton}
+              items={overlays[overlay].items}
+              gradient={steps.find((s) => s.overlay === overlay)!.gradient}
+              topInset={insets.top}
+              bottomInset={
+                insets.bottom +
+                CLOSE_BUTTON_BOTTOM +
+                CLOSE_BUTTON_HEIGHT +
+                CLOSE_BUTTON_MARGIN
+              }
+            />
+          )}
           <Pressable
-            onPress={closeBreathing}
-            style={[styles.closeButton, { bottom: insets.bottom + 32 }]}
+            onPress={closeOverlay}
+            style={[styles.closeButton, { bottom: insets.bottom + CLOSE_BUTTON_BOTTOM }]}
           >
             <Text style={styles.closeText}>{t.close}</Text>
           </Pressable>
@@ -476,7 +520,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: "rgba(255,255,255,0.9)",
   },
-  breathingScreen: {
+  overlayScreen: {
     position: "absolute",
     top: 0,
     left: 0,
@@ -488,12 +532,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     alignSelf: "center",
     paddingHorizontal: 28,
-    paddingVertical: 12,
+    paddingVertical: CLOSE_BUTTON_PADDING_V,
     borderRadius: 24,
     backgroundColor: "rgba(255,255,255,0.14)",
   },
   closeText: {
     fontSize: 16,
+    lineHeight: CLOSE_BUTTON_LINE_HEIGHT,
     fontWeight: "600",
     color: "rgba(255,255,255,0.9)",
   },
