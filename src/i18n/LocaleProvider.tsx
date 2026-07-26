@@ -67,13 +67,14 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let active = true;
-    AsyncStorage.multiGet([STORAGE_KEY_LANGUAGE, STORAGE_KEY_GENDER]).then(
-      ([[, storedLang], [, storedGender]]) => {
+    // If storage is unavailable the device-detected defaults simply stay.
+    AsyncStorage.multiGet([STORAGE_KEY_LANGUAGE, STORAGE_KEY_GENDER])
+      .then(([[, storedLang], [, storedGender]]) => {
         if (!active) return;
         if (isSupported(storedLang)) setLanguageState(storedLang);
         if (isGenderValue(storedGender)) setGenderState(storedGender);
-      },
-    );
+      })
+      .catch(() => {});
     return () => {
       active = false;
     };
@@ -82,11 +83,11 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   const value = useMemo<LocaleContextValue>(() => {
     const setLanguage = (lang: Language) => {
       setLanguageState(lang);
-      AsyncStorage.setItem(STORAGE_KEY_LANGUAGE, lang);
+      AsyncStorage.setItem(STORAGE_KEY_LANGUAGE, lang).catch(() => {});
     };
     const setGender = (g: Gender) => {
       setGenderState(g);
-      AsyncStorage.setItem(STORAGE_KEY_GENDER, g);
+      AsyncStorage.setItem(STORAGE_KEY_GENDER, g).catch(() => {});
     };
     const g = (text: string) => resolveGender(text, gender);
     return {

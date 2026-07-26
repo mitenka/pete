@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { AccessibilityInfo, StyleSheet, View } from "react-native";
 import Animated, {
   Easing,
+  ReduceMotion,
   type SharedValue,
   interpolate,
   runOnJS,
   useAnimatedStyle,
+  useReducedMotion,
   useSharedValue,
   withRepeat,
   withSequence,
@@ -56,13 +58,20 @@ export default function BreathingCircle() {
   const rotation = useSharedValue(0);
   const labelOpacity = useSharedValue(0);
   const [phase, setPhase] = useState<Phase>("inhale");
+  const reducedMotion = useReducedMotion();
 
+  // The slow flower spin is purely decorative — skip it entirely when the
+  // system asks for reduced motion.
   useEffect(() => {
+    if (reducedMotion) return;
     rotation.value = withRepeat(
       withTiming(360, { duration: ROTATION_MS, easing: Easing.linear }),
       -1,
     );
-  }, [rotation]);
+    return () => {
+      rotation.value = 0;
+    };
+  }, [rotation, reducedMotion]);
 
   useEffect(() => {
     let cancelled = false;
@@ -82,11 +91,18 @@ export default function BreathingCircle() {
         ),
         withTiming(1, { duration: 380, easing: Easing.out(Easing.cubic) }),
       );
+      // The label alone isn't enough for screen-reader users to follow the
+      // rhythm — speak each phase as it starts.
+      AccessibilityInfo.announceForAccessibility(labels[current]);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      // The petal swell is the breathing pacer itself, not decoration: under
+      // system reduced motion Reanimated would snap it to the end value and the
+      // exercise would stop making sense, so it must keep animating.
       if (current === "inhale") {
         progress.value = withTiming(1, {
           duration: INHALE_MS,
           easing: Easing.inOut(Easing.quad),
+          reduceMotion: ReduceMotion.Never,
         });
         timer = setTimeout(() => run("hold"), INHALE_MS);
       } else if (current === "hold") {
@@ -95,6 +111,7 @@ export default function BreathingCircle() {
         progress.value = withTiming(0, {
           duration: EXHALE_MS,
           easing: Easing.inOut(Easing.quad),
+          reduceMotion: ReduceMotion.Never,
         });
         timer = setTimeout(() => run("inhale"), EXHALE_MS);
       }

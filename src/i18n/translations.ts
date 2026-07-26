@@ -51,6 +51,11 @@ export interface UIStrings {
   inhale: string;
   hold: string;
   exhale: string;
+  // Screen-reader only. stepOf contains {n} and {total} placeholders.
+  stepOf: string;
+  masculine: string;
+  feminine: string;
+  settings: string;
 }
 
 // Typed dictionary: TypeScript guarantees every language has every key.
@@ -65,6 +70,10 @@ export const ui: Record<Language, UIStrings> = {
     inhale: "Inhale",
     hold: "Hold",
     exhale: "Exhale",
+    stepOf: "Step {n} of {total}",
+    masculine: "Masculine",
+    feminine: "Feminine",
+    settings: "Settings",
   },
   ru: {
     menuTitle: "13 шагов из эмоционального флэшбека",
@@ -76,6 +85,10 @@ export const ui: Record<Language, UIStrings> = {
     inhale: "Вдох",
     hold: "Пауза",
     exhale: "Выдох",
+    stepOf: "Шаг {n} из {total}",
+    masculine: "Мужской род",
+    feminine: "Женский род",
+    settings: "Настройки",
   },
   sr: {
     menuTitle: "13 koraka iz emocionalnog flešbeka",
@@ -87,5 +100,9 @@ export const ui: Record<Language, UIStrings> = {
     inhale: "Udah",
     hold: "Pauza",
     exhale: "Izdah",
+    stepOf: "Korak {n} od {total}",
+    masculine: "Muški rod",
+    feminine: "Ženski rod",
+    settings: "Podešavanja",
   },
 };

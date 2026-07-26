@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
+  AccessibilityInfo,
   BackHandler,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -39,7 +40,12 @@ import StepCard from "./src/components/StepCard";
 import BreathingCircle from "./src/components/BreathingCircle";
 import ListOverlay from "./src/components/ListOverlay";
 import { LocaleProvider, useLocale } from "./src/i18n/LocaleProvider";
-import { GENDERS, GENDER_LABELS, LANGUAGES } from "./src/i18n/translations";
+import {
+  GENDERS,
+  GENDER_LABELS,
+  LANGUAGES,
+  LANGUAGE_NAMES,
+} from "./src/i18n/translations";
 
 const PAGE_COUNT = stepMeta.length;
 
@@ -52,10 +58,10 @@ const DOTS_PAD_V = 18;
 // can reserve exactly enough scroll clearance from the very first render —
 // measuring it at runtime via onLayout raced with the initial paint (worst
 // on Android, where insets.bottom is often 0) and left text peeking through
-// the button.
+// the button. The rendered line height follows the system font scale, so the
+// button height is computed in Deck from useWindowDimensions().fontScale.
 const CLOSE_BUTTON_PADDING_V = 12;
 const CLOSE_BUTTON_LINE_HEIGHT = 20;
-const CLOSE_BUTTON_HEIGHT = CLOSE_BUTTON_PADDING_V * 2 + CLOSE_BUTTON_LINE_HEIGHT;
 const CLOSE_BUTTON_BOTTOM = 32;
 const CLOSE_BUTTON_MARGIN = 32;
 
@@ -93,8 +99,10 @@ function Dot({
 }
 
 function Deck() {
-  const { width } = useWindowDimensions();
+  const { width, fontScale } = useWindowDimensions();
   const insets = useSafeAreaInsets();
+  const closeButtonHeight =
+    CLOSE_BUTTON_PADDING_V * 2 + CLOSE_BUTTON_LINE_HEIGHT * fontScale;
   const { t, language, setLanguage, gender, setGender, gendered, steps, overlays } =
     useLocale();
   const scrollX = useSharedValue(0);
@@ -130,11 +138,15 @@ function Deck() {
   }, [overlay]);
 
   const lastPage = useRef(0);
+  // Mirrors lastPage as state, only for the screen-reader value/actions on the
+  // dot strip — visuals are driven by scrollX on the UI thread.
+  const [a11yPage, setA11yPage] = useState(0);
   const [stripWidth, setStripWidth] = useState(1);
   const scrubPage = useSharedValue(-1);
 
   const tickPage = (page: number) => {
     lastPage.current = page;
+    setA11yPage(page);
     Haptics.selectionAsync();
   };
 
@@ -174,6 +186,20 @@ function Deck() {
   const menuOpenSV = useSharedValue(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // The settings menu opens only by a pull-down gesture, which screen readers
+  // swallow — so while one is active, render a real "Settings" button too.
+  const [screenReaderOn, setScreenReaderOn] = useState(false);
+  useEffect(() => {
+    AccessibilityInfo.isScreenReaderEnabled()
+      .then(setScreenReaderOn)
+      .catch(() => {});
+    const sub = AccessibilityInfo.addEventListener(
+      "screenReaderChanged",
+      setScreenReaderOn,
+    );
+    return () => sub.remove();
+  }, []);
+
   const onMenuToggle = (open: boolean) => {
     setMenuOpen(open);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -183,6 +209,14 @@ function Deck() {
     menuOpenSV.value = false;
     setMenuOpen(false);
     translateY.value = withSpring(0, SPRING);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const toggleMenu = () => {
+    const open = !menuOpenSV.value;
+    menuOpenSV.value = open;
+    setMenuOpen(open);
+    translateY.value = withSpring(open ? menuHeight : 0, SPRING);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
@@ -240,6 +274,14 @@ function Deck() {
       lastPage.current = page;
       Haptics.selectionAsync();
     }
+    setA11yPage(page);
+  };
+
+  const goToPage = (page: number) => {
+    const target = Math.min(PAGE_COUNT - 1, Math.max(0, page));
+    if (target === lastPage.current) return;
+    scrollRef.current?.scrollTo({ x: target * width, animated: true });
+    tickPage(target);
   };
 
   const overlayStyle = useAnimatedStyle(() => ({
@@ -254,6 +296,9 @@ function Deck() {
           { height: menuHeight, paddingTop: insets.top + 16 },
           menuStyle,
         ]}
+        // Off-screen while closed, but still in-tree — keep screen readers out.
+        accessibilityElementsHidden={!menuOpen}
+        importantForAccessibility={menuOpen ? "auto" : "no-hide-descendants"}
       >
         <View style={styles.menuText}>
           <Text style={styles.menuTitle}>{t.menuTitle}</Text>
@@ -266,6 +311,9 @@ function Deck() {
               return (
                 <Pressable
                   key={lang}
+                  accessibilityRole="button"
+                  accessibilityLabel={LANGUAGE_NAMES[lang]}
+                  accessibilityState={{ selected: active }}
                   onPress={() => {
                     if (!active) {
                       setLanguage(lang);
@@ -297,6 +345,9 @@ function Deck() {
                 return (
                   <Pressable
                     key={g}
+                    accessibilityRole="button"
+                    accessibilityLabel={g === "m" ? t.masculine : t.feminine}
+                    accessibilityState={{ selected: active }}
                     onPress={() => {
                       if (!active) {
                         setGender(g);
@@ -325,7 +376,13 @@ function Deck() {
       </Animated.View>
 
       <GestureDetector gesture={pan}>
-        <Animated.View style={[styles.deck, deckStyle]}>
+        <Animated.View
+          style={[styles.deck, deckStyle]}
+          // The full-screen overlay is in-tree, not a Modal, so hide the deck
+          // from screen readers while it's up.
+          accessibilityElementsHidden={!!overlay}
+          importantForAccessibility={overlay ? "no-hide-descendants" : "auto"}
+        >
           <Animated.ScrollView
             ref={scrollRef}
             horizontal
@@ -363,7 +420,26 @@ function Deck() {
 
           <View style={[styles.pagination, { bottom: insets.bottom + 6 }]}>
             <GestureDetector gesture={dotsGesture}>
-              <View style={styles.dotsTouch}>
+              <View
+                style={styles.dotsTouch}
+                accessible
+                accessibilityRole="adjustable"
+                accessibilityValue={{
+                  text: t.stepOf
+                    .replace("{n}", String(a11yPage + 1))
+                    .replace("{total}", String(PAGE_COUNT)),
+                }}
+                accessibilityActions={[
+                  { name: "increment" },
+                  { name: "decrement" },
+                ]}
+                onAccessibilityAction={(e) =>
+                  goToPage(
+                    a11yPage +
+                      (e.nativeEvent.actionName === "increment" ? 1 : -1),
+                  )
+                }
+              >
                 <View
                   style={styles.dotsRow}
                   onLayout={(e) => setStripWidth(e.nativeEvent.layout.width)}
@@ -377,13 +453,33 @@ function Deck() {
           </View>
 
           {menuOpen && (
-            <Pressable style={StyleSheet.absoluteFill} onPress={closeMenu} />
+            <Pressable
+              style={StyleSheet.absoluteFill}
+              onPress={closeMenu}
+              accessible={false}
+              importantForAccessibility="no"
+            />
+          )}
+
+          {screenReaderOn && (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t.settings}
+              accessibilityState={{ expanded: menuOpen }}
+              onPress={toggleMenu}
+              style={[styles.settingsButton, { top: insets.top + 12 }]}
+            >
+              <Text style={styles.settingsText}>{t.settings}</Text>
+            </Pressable>
           )}
         </Animated.View>
       </GestureDetector>
 
       {overlay && (
-        <Animated.View style={[styles.overlayScreen, overlayStyle]}>
+        <Animated.View
+          style={[styles.overlayScreen, overlayStyle]}
+          accessibilityViewIsModal
+        >
           {overlay === "breathing" ? (
             <>
               <LinearGradient
@@ -403,12 +499,13 @@ function Deck() {
               bottomInset={
                 insets.bottom +
                 CLOSE_BUTTON_BOTTOM +
-                CLOSE_BUTTON_HEIGHT +
+                closeButtonHeight +
                 CLOSE_BUTTON_MARGIN
               }
             />
           )}
           <Pressable
+            accessibilityRole="button"
             onPress={closeOverlay}
             style={[styles.closeButton, { bottom: insets.bottom + CLOSE_BUTTON_BOTTOM }]}
           >
@@ -527,6 +624,19 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 10,
+  },
+  settingsButton: {
+    position: "absolute",
+    right: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 18,
+    backgroundColor: "rgba(255,255,255,0.14)",
+  },
+  settingsText: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "rgba(255,255,255,0.9)",
   },
   closeButton: {
     position: "absolute",

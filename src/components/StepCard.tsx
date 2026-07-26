@@ -18,19 +18,21 @@ interface Props {
 }
 
 // Kept in sync with the breatheButton/breatheText styles below: the button is
-// absolutely positioned over the card, so cards that have one reserve
-// BUTTON_CLEARANCE of bottom padding (plus the safe-area inset the button
-// rides on) to keep long body text from running underneath it.
+// absolutely positioned over the card, so cards that have one reserve enough
+// bottom padding (plus the safe-area inset the button rides on) to keep long
+// body text from running underneath it. The rendered line height follows the
+// system font scale, so the clearance is computed in the component from
+// useWindowDimensions().fontScale.
 const BUTTON_PADDING_V = 14;
 const BUTTON_LINE_HEIGHT = 20;
-const BUTTON_HEIGHT = BUTTON_PADDING_V * 2 + BUTTON_LINE_HEIGHT;
 const BUTTON_BOTTOM = 64;
-const BUTTON_CLEARANCE = BUTTON_BOTTOM + BUTTON_HEIGHT + 24;
 
 export default function StepCard({ step, index, scrollX, onOpenOverlay }: Props) {
-  const { width } = useWindowDimensions();
+  const { width, fontScale } = useWindowDimensions();
   const { t } = useLocale();
   const insets = useSafeAreaInsets();
+  const buttonClearance =
+    BUTTON_BOTTOM + BUTTON_PADDING_V * 2 + BUTTON_LINE_HEIGHT * fontScale + 24;
 
   const contentStyle = useAnimatedStyle(() => {
     const input = [(index - 1) * width, index * width, (index + 1) * width];
@@ -60,7 +62,7 @@ export default function StepCard({ step, index, scrollX, onOpenOverlay }: Props)
       <Animated.View
         style={[
           styles.content,
-          step.overlay && { paddingBottom: insets.bottom + BUTTON_CLEARANCE },
+          step.overlay && { paddingBottom: insets.bottom + buttonClearance },
           contentStyle,
         ]}
       >
@@ -75,6 +77,7 @@ export default function StepCard({ step, index, scrollX, onOpenOverlay }: Props)
         </View>
         {step.overlay && (
           <Pressable
+            accessibilityRole="button"
             onPress={() => onOpenOverlay(step.overlay!)}
             style={({ pressed }) => [
               styles.breatheButton,
