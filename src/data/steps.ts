@@ -40,99 +40,84 @@ export const stepText: Record<Language, StepText[]> = {
   en: [
     {
       title: "Say to yourself: “I’m having a flashback”",
-      body: [
-        "A flashback pulls you into a timeless part of the psyche that feels as helpless and hopeless as you did in childhood.",
-        "But the feelings and sensations you’re experiencing now are memories. They cannot hurt you in the present.",
-      ],
+      body: ["What you’re living through is a memory. It can’t hurt you now."],
     },
     {
       title: "Remind yourself: “I feel afraid, but I’m not in danger”",
+      body: ["There is no danger.", "Here, in the present, you are safe."],
+    },
+    {
+      title: "Own your right and need to have boundaries",
       body: [
-        "“I am here, in the present, and I am safe.”",
-        "Remember: you are not in that past where it was dangerous.",
+        "You are free to leave dangerous situations and to protest unfair treatment.",
       ],
     },
     {
-      title: "Own your right to boundaries",
+      title: "Speak reassuringly to your inner child",
       body: [
-        "Remind yourself: you don’t have to let anyone treat you badly.",
-        "You can leave dangerous situations and protest unfair treatment.",
+        "They need to know that you love them unconditionally, and that they can come to you for comfort and protection.",
       ],
     },
     {
-      title: "Support your inner child",
+      title: "Deconstruct eternity thinking",
       body: [
-        "Your inner child needs to know that you love them unconditionally.",
-        "Tell them: “You can come to me for comfort and protection whenever you feel scared and alone.”",
-      ],
-    },
-    {
-      title: "Dispel the idea that the flashback is forever",
-      body: [
-        "In childhood, fear and abandonment felt endless — a safe future was impossible to imagine.",
-        "Remember: the flashback will pass. It has before.",
+        "In childhood, fear and abandonment seemed endless.",
+        "Remember that the flashback will pass, as it has many times before.",
       ],
     },
     {
       title: "You are in an adult body",
       body: [
-        "You have allies, skills, and resources to protect yourself that you didn’t have as a child.",
-        "Feeling small and fragile is a sign of a flashback, not reality.",
+        "Now you have allies, skills, and resources to protect yourself that you never had as a child.",
       ],
     },
     {
-      title: "Come back into your body",
+      title: "Ease back into your body",
       body: [
-        "Fear is just energy in the body. It won’t harm you if you don’t run from it or fight it.",
-        "Gently ask your body to relax: feel each large muscle group and release the tension.",
-        "Breathe deeply and slowly. Holding your breath signals danger to the body.",
-        "Slow down: rushing pushes you toward a flight response.",
-        "Find a safe place: wrap yourself in a blanket, hug a pillow, lie down.",
+        "Feel the fear, but don’t act on it.",
+        "Slow down. Breathe deeply and slowly.",
       ],
     },
     {
       title: "Resist the inner critic",
       body: [
-        "The critic exaggerates catastrophes and demands perfection. Stop these thoughts.",
-        "Refuse to shame, hate, or abandon yourself.",
-        "Channel the anger of self-criticism into a “NO” to unfair attacks on yourself.",
+        "Stop the thought when you recognize the critic’s voice.",
+        "Turn the anger of self-criticism against the critic itself.",
+        "Refuse to shame or hate yourself. Be compassionate with yourself.",
       ],
     },
     {
-      title: "Let yourself grieve",
+      title: "Allow yourself to grieve",
       body: [
-        "Flashbacks are a chance to release old, unexpressed pain: fear, hurt, abandonment.",
-        "Acknowledge and comfort the childhood experience of helplessness. That feeling was real — back then.",
-        "Healthy grieving turns tears into self-compassion, and anger into self-protection.",
+        "Healthy grieving can turn tears into self-compassion, and anger into self-protection.",
       ],
     },
     {
-      title: "Don’t stay alone too long",
+      title: "Cultivate safe relationships",
       body: [
-        "Spending time alone is fine. But don’t let shame isolate you.",
-        "Feeling shame doesn’t mean you are shameful.",
-        "Tell people close to you about your flashbacks; ask them to help you talk through and feel them.",
+        "Be alone if you need to, but don’t let shame isolate you.",
+        "Tell the people close to you about your flashbacks and ask them to help you talk them through and live through them.",
       ],
     },
     {
-      title: "Learn to recognize your triggers",
+      title: "Learn to identify your triggers",
       body: [
-        "When possible, avoid unsafe people, places, and activities.",
-        "If a trigger is unavoidable, prepare in advance using these steps.",
+        "Avoid unsafe people, places, activities, and thoughts that spin you up.",
+        "If a trigger is unavoidable — prepare in advance.",
       ],
     },
     {
       title: "Figure out what you’re flashing back to",
       body: [
         "Flashbacks point to old wounds that are still waiting to be acknowledged and healed.",
-        "They show which needs went unmet in childhood — and hint at how to meet them now.",
+        "They show which needs went unmet in childhood.",
       ],
     },
     {
-      title: "Be patient with yourself",
+      title: "Be patient with a slow recovery",
       body: [
-        "Recovery is a slow process. Your body needs time in the present for the adrenaline to fade.",
-        "Don’t scold yourself for having a flashback. It’s not a setback — it’s part of the journey.",
+        "Recovery is a slow process.",
+        "Don’t scold yourself for a flashback. It’s not a setback — it’s part of the journey.",
       ],
     },
   ],
@@ -145,12 +130,12 @@ export const stepText: Record<Language, StepText[]> = {
     },
     {
       title: "Напомни себе: «Сейчас я в безопасности»",
-      body: ["Опасности нет.", "Здесь, в настоящем, ты в безопасности."],
+      body: ["Опасности нет.", "Здесь, в настоящем, ты в безопасности."],
     },
     {
       title: "Защищай свои права и границы",
       body: [
-        "Ты {свободен|свободна} покидать опасные ситуации и протестовать против несправедливого обращения.",
+        "Ты {волен|вольна} покидать опасные ситуации и протестовать против несправедливого обращения.",
       ],
     },
     {
@@ -160,9 +145,9 @@ export const stepText: Record<Language, StepText[]> = {
       ],
     },
     {
-      title: "Деконструируй представление о «вечных проблемах»",
+      title: "Оспорь мысль, что это навсегда",
       body: [
-        "В детстве страх и заброшенность представлялись бесконечными.",
+        "В детстве страх и заброшенность казались бесконечными.",
         "Помни, что флешбэк пройдёт, как проходил уже много раз.",
       ],
     },
@@ -175,149 +160,136 @@ export const stepText: Record<Language, StepText[]> = {
     {
       title: "Ласково попроси тело расслабиться",
       body: [
-        "Ощущай страх, но не реагируй на него.",
-        "Замедлись. Дыши глубоко и медленно.",
+        "Ощущай страх, но не реагируй на него.",
+        "Замедлись. Дыши глубоко и медленно.",
       ],
     },
     {
       title: "Сопротивляйся внутреннему критику",
       body: [
-        "Используй остановку мысли.",
-        "Направь гнев самоатаки на критика.",
-        "Откажись стыдить и ненавидеть себя. Сострадай себе.",
+        "Останавливай мысль, когда узнаёшь голос критика.",
+        "Разверни гнев самокритики против самого критика.",
+        "Откажись стыдить и ненавидеть себя. Сострадай себе.",
       ],
     },
     {
       title: "Позволь себе горевать",
       body: [
-        "Здоровое горевание способно превратить слёзы в самосострадание, а гнев — в самозащиту.",
+        "Здоровое горевание способно превратить слёзы в самосострадание, а гнев — в самозащиту.",
       ],
     },
     {
-      title: "Культивируй безопасные отношения",
+      title: "Опирайся на безопасные отношения",
       body: [
-        "Бери время побыть {одному|одной}, когда это нужно, но не давай стыду изолировать тебя.",
-        "Расскажи близким о флешбэках и попроси их помочь тебе проговаривать и проживать их.",
+        "Побудь {один|одна}, если это нужно, но не давай стыду изолировать тебя.",
+        "Расскажи близким о флешбэках и попроси помочь тебе проговаривать и проживать их.",
       ],
     },
     {
       title: "Учись распознавать триггеры",
       body: [
-        "Избегай небезопасных людей, мест, занятий и провоцирующих мыслительных процессов.",
+        "Избегай небезопасных людей, мест, занятий и мыслей, которые тебя раскручивают.",
         "Если триггер неизбежен — подготовься заранее.",
       ],
     },
     {
       title: "Выясни, к чему ты возвращаешься",
       body: [
-        "Флэшбеки указывают на старые раны, которые ещё ждут признания и исцеления.",
+        "Флешбэки указывают на старые раны, которые ещё ждут признания и исцеления.",
         "Они показывают, какие потребности не были удовлетворены в детстве.",
       ],
     },
     {
-      title: "Будь {терпелив|терпелива}",
+      title: "Будь {терпелив|терпелива} к себе",
       body: [
         "Восстановление — медленный процесс.",
-        "Не ругай себя за флэшбек. Это не откат назад, это часть пути.",
+        "Не ругай себя за флешбэк. Это не откат назад, а часть пути.",
       ],
     },
   ],
   sr: [
     {
-      title: "Reci sebi: „Imam flešbek“",
+      title: "Reci naglas: „Imam flešbek“",
       body: [
-        "Flešbek te odvodi u bezvremeni deo psihe koji se oseća jednako bespomoćno i beznadežno kao u detinjstvu.",
-        "Ali osećanja i senzacije koje sada doživljavaš jesu sećanja. Ona ne mogu da ti naškode u sadašnjosti.",
+        "Ono što proživljavaš — to su sećanja. Ne mogu da ti naškode sada.",
       ],
     },
     {
-      title: "Podseti se: „Plašim se, ali nisam u opasnosti“",
+      title: "Podseti se: „Sada sam na sigurnom“",
+      body: ["Nema opasnosti.", "Ovde, u sadašnjosti, na sigurnom si."],
+    },
+    {
+      title: "Štiti svoja prava i granice",
       body: [
-        "„Ovde sam, u sadašnjosti, na sigurnom.“",
-        "Zapamti: sada nisi u onoj prošlosti u kojoj je bilo opasno.",
+        "{Slobodan|Slobodna} si da napuštaš opasne situacije i da se buniš protiv nepravednog postupanja.",
       ],
     },
     {
-      title: "Priznaj sebi pravo na granice",
+      title: "Razgovaraj sa unutrašnjim detetom",
       body: [
-        "Podseti se: ne moraš da dozvoliš nikome da se loše ophodi prema tebi.",
-        "Možeš da napuštaš opasne situacije i da se buniš protiv nepravednog postupanja.",
+        "Njemu je važno da zna da ga voliš bezuslovno i da može da dođe kod tebe po utehu i zaštitu.",
       ],
     },
     {
-      title: "Podrži unutrašnje dete",
+      title: "Ospori misao da je ovo zauvek",
       body: [
-        "Tvoje unutrašnje dete treba da zna da ga voliš bezuslovno.",
-        "Reci mu: „Možeš da dođeš kod mene po utehu i zaštitu kad god se uplašiš i osetiš usamljeno.“",
+        "U detinjstvu su strah i napuštenost izgledali beskrajno.",
+        "Zapamti da će flešbek proći, kao što je prolazio već mnogo puta.",
       ],
     },
     {
-      title: "Razbij misao da flešbek traje večno",
+      title: "Ti si u odraslom telu",
       body: [
-        "U detinjstvu su se strah i napuštenost činili beskrajnim — sigurnu budućnost je bilo nemoguće zamisliti.",
-        "Zapamti: flešbek će proći. Već je prolazio i ranije.",
+        "Sada imaš saveznike, veštine i resurse za zaštitu, kojih u detinjstvu nikada nije bilo.",
       ],
     },
     {
-      title: "Ti si u odraslom telu",
+      title: "Nežno zamoli telo da se opusti",
       body: [
-        "Imaš saveznike, veštine i resurse da se zaštitiš — kojih u detinjstvu nije bilo.",
-        "Osećaj da si {mali|mala} i {krhak|krhka} znak je flešbeka, a ne stvarnost.",
+        "Oseti strah, ali ne reaguj na njega.",
+        "Uspori. Diši duboko i polako.",
       ],
     },
     {
-      title: "Vrati se u svoje telo",
+      title: "Odupri se unutrašnjem kritičaru",
       body: [
-        "Strah je samo energija u telu. Neće ti naškoditi ako ne bežiš od njega i ne boriš se s njim.",
-        "Nežno zamoli telo da se opusti: oseti svaku veliku grupu mišića i otpusti napetost.",
-        "Diši duboko i polako. Zadržavanje daha telu signalizira opasnost.",
-        "Uspori: žurba te gura ka reakciji bekstva.",
-        "Pronađi sigurno mesto: umotaj se u ćebe, zagrli jastuk, prilegni.",
+        "Zaustavi misao kada prepoznaš glas kritičara.",
+        "Okreni bes samokritike protiv samog kritičara.",
+        "Odbij da se stidiš i mrziš sebe. Saosećaj sa sobom.",
       ],
     },
     {
-      title: "Odupri se unutrašnjem kritičaru",
+      title: "Dozvoli sebi da tuguješ",
       body: [
-        "Kritičar preuveličava katastrofe i zahteva savršenstvo. Zaustavljaj te misli.",
-        "Odbij da se stidiš, mrziš i napuštaš sebe.",
-        "Usmeri bes samokritike u „NE“ nepravednim napadima na sebe.",
+        "Zdravo tugovanje može da pretvori suze u saosećanje prema sebi, a bes — u zaštitu sebe.",
       ],
     },
     {
-      title: "Dozvoli sebi da tuguješ",
+      title: "Osloni se na sigurne odnose",
       body: [
-        "Flešbekovi su prilika da ispustiš staru, neizraženu bol: strah, povredu, napuštenost.",
-        "Priznaj i uteši dečje iskustvo bespomoćnosti. To osećanje je bilo stvarno — tada.",
-        "Zdravo tugovanje pretvara suze u saosećanje prema sebi, a bes u zaštitu sebe.",
+        "Budi {sam|sama} kada ti je potrebno, ali ne dozvoli da te stid izoluje.",
+        "Reci bliskima o flešbekovima i zamoli ih da ti pomognu da ih izgovoriš i proživiš.",
       ],
     },
     {
-      title: "Ne ostaj predugo sam",
+      title: "Nauči da prepoznaješ okidače",
       body: [
-        "Sasvim je u redu provesti vreme nasamo. Ali ne dozvoli da te stid izoluje.",
-        "Osećati stid ne znači biti {sraman|sramna}.",
-        "Reci bliskima o flešbekovima, zamoli ih da ti pomognu da ih izgovoriš i proživiš.",
+        "Izbegavaj nesigurne ljude, mesta, aktivnosti i misli koje te raspaljuju.",
+        "Ako je okidač neizbežan — pripremi se unapred.",
       ],
     },
     {
-      title: "Nauči da prepoznaješ okidače",
+      title: "Otkrij u šta se vraćaš",
       body: [
-        "Kad je moguće, izbegavaj nesigurne ljude, mesta i aktivnosti.",
-        "Ako je okidač neizbežan — pripremi se unapred, oslanjajući se na ove korake.",
-      ],
-    },
-    {
-      title: "Otkrij u šta se vraćaš",
-      body: [
-        "Flešbekovi ukazuju na stare rane koje još čekaju da budu priznate i isceljene.",
-        "Pokazuju koje potrebe nisu bile zadovoljene u detinjstvu — i nagoveštavaju kako da ih zadovoljiš sada.",
+        "Flešbekovi ukazuju na stare rane koje još čekaju priznanje i isceljenje.",
+        "Pokazuju koje potrebe nisu bile zadovoljene u detinjstvu.",
       ],
     },
     {
       title: "Budi {strpljiv|strpljiva} prema sebi",
       body: [
-        "Oporavak je spor proces. Telu treba vreme u sadašnjosti da adrenalin nestane.",
-        "Ne grdi sebe što si {imao|imala} flešbek. To nije nazadovanje — to je deo puta.",
+        "Oporavak je spor proces.",
+        "Ne grdi sebe zbog flešbeka. To nije nazadovanje, već deo puta.",
       ],
     },
   ],

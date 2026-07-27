@@ -61,11 +61,12 @@ export interface UIStrings {
 // Typed dictionary: TypeScript guarantees every language has every key.
 export const ui: Record<Language, UIStrings> = {
   en: {
-    menuTitle: "13 steps out of an emotional flashback",
-    menuCredit: "After Pete Walker, “Complex PTSD: From Surviving to Thriving”",
+    menuTitle: "13 steps out of an emotional flashback",
+    menuCredit:
+      "After Pete Walker’s book “Complex PTSD: From Surviving to Thriving”",
     breathe: "Breathe together",
-    rightsButton: "My rights",
-    needsButton: "My needs",
+    rightsButton: "Human rights",
+    needsButton: "Normal needs",
     close: "Close",
     inhale: "Inhale",
     hold: "Hold",
@@ -76,8 +77,8 @@ export const ui: Record<Language, UIStrings> = {
     settings: "Settings",
   },
   ru: {
-    menuTitle: "13 шагов из эмоционального флэшбека",
-    menuCredit: "По Питу Уокеру, «КПТСР: от выживания к процветанию»",
+    menuTitle: "13 шагов из эмоционального флешбэка",
+    menuCredit: "По книге Пита Уокера «КПТСР: от выживания к процветанию»",
     breathe: "Подышать вместе",
     rightsButton: "Права человека",
     needsButton: "Нормальные потребности",
@@ -91,12 +92,12 @@ export const ui: Record<Language, UIStrings> = {
     settings: "Настройки",
   },
   sr: {
-    menuTitle: "13 koraka iz emocionalnog flešbeka",
+    menuTitle: "13 koraka iz emocionalnog flešbeka",
     menuCredit:
-      "Po Pitu Vokeru, „Kompleksni PTSP: od preživljavanja do napredovanja“",
+      "Po knjizi Pita Vokera „Kompleksni PTSP: od preživljavanja do napredovanja“",
     breathe: "Diši zajedno",
-    rightsButton: "Moja prava",
-    needsButton: "Moje potrebe",
+    rightsButton: "Ljudska prava",
+    needsButton: "Normalne potrebe",
     close: "Zatvori",
     inhale: "Udah",
     hold: "Pauza",
