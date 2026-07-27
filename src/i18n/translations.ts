@@ -79,8 +79,8 @@ export const ui: Record<Language, UIStrings> = {
     menuTitle: "13 шагов из эмоционального флэшбека",
     menuCredit: "По Питу Уокеру, «КПТСР: от выживания к процветанию»",
     breathe: "Подышать вместе",
-    rightsButton: "Мои права",
-    needsButton: "Мои потребности",
+    rightsButton: "Права человека",
+    needsButton: "Нормальные потребности",
     close: "Закрыть",
     inhale: "Вдох",
     hold: "Пауза",
@@ -92,7 +92,8 @@ export const ui: Record<Language, UIStrings> = {
   },
   sr: {
     menuTitle: "13 koraka iz emocionalnog flešbeka",
-    menuCredit: "Po Pitu Vokeru, „Kompleksni PTSP: od preživljavanja do napredovanja“",
+    menuCredit:
+      "Po Pitu Vokeru, „Kompleksni PTSP: od preživljavanja do napredovanja“",
     breathe: "Diši zajedno",
     rightsButton: "Moja prava",
     needsButton: "Moje potrebe",
