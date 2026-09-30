@@ -47,6 +47,7 @@ export interface UIStrings {
   breathe: string;
   rightsButton: string;
   needsButton: string;
+  compassionButton: string;
   close: string;
   inhale: string;
   hold: string;
@@ -67,6 +68,7 @@ export const ui: Record<Language, UIStrings> = {
     breathe: "Breathe together",
     rightsButton: "Human rights",
     needsButton: "Normal needs",
+    compassionButton: "Kindness to yourself",
     close: "Close",
     inhale: "Inhale",
     hold: "Hold",
@@ -82,6 +84,7 @@ export const ui: Record<Language, UIStrings> = {
     breathe: "Подышать вместе",
     rightsButton: "Права человека",
     needsButton: "Нормальные потребности",
+    compassionButton: "Доброта к себе",
     close: "Закрыть",
     inhale: "Вдох",
     hold: "Пауза",
@@ -98,6 +101,7 @@ export const ui: Record<Language, UIStrings> = {
     breathe: "Diši zajedno",
     rightsButton: "Ljudska prava",
     needsButton: "Normalne potrebe",
+    compassionButton: "Dobrota prema sebi",
     close: "Zatvori",
     inhale: "Udah",
     hold: "Pauza",

@@ -1,6 +1,6 @@
 import type { Language } from "../i18n/translations";
 
-export type OverlayKind = "breathing" | "rights" | "needs";
+export type OverlayKind = "breathing" | "rights" | "needs" | "compassion";
 
 // Language-independent structure: order, colors, and which full-screen
 // overlay (if any) a step's button opens. Translators never touch this.
@@ -27,7 +27,7 @@ export const stepMeta: StepMeta[] = [
   { id: 5, gradient: ["#232462", "#131a4d"] },
   { id: 6, gradient: ["#1d2c6b", "#102050"] },
   { id: 7, gradient: ["#163a72", "#0d2a55"], overlay: "breathing" },
-  { id: 8, gradient: ["#10477a", "#0a3360"] },
+  { id: 8, gradient: ["#10477a", "#0a3360"], overlay: "compassion" },
   { id: 9, gradient: ["#0b5380", "#073d63"] },
   { id: 10, gradient: ["#085e82", "#054762"] },
   { id: 11, gradient: ["#076a7e", "#045061"] },

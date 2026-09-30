@@ -38,6 +38,7 @@ import {
 import { stepMeta, type OverlayKind } from "./src/data/steps";
 import StepCard from "./src/components/StepCard";
 import BreathingCircle from "./src/components/BreathingCircle";
+import CompassionFlow from "./src/components/CompassionFlow";
 import ListOverlay from "./src/components/ListOverlay";
 import { LocaleProvider, useLocale } from "./src/i18n/LocaleProvider";
 import {
@@ -480,7 +481,7 @@ function Deck() {
           style={[styles.overlayScreen, overlayStyle]}
           accessibilityViewIsModal
         >
-          {overlay === "breathing" ? (
+          {overlay === "breathing" || overlay === "compassion" ? (
             <>
               <LinearGradient
                 colors={steps.find((s) => s.overlay === overlay)!.gradient}
@@ -488,7 +489,18 @@ function Deck() {
                 end={{ x: 1, y: 1 }}
                 style={StyleSheet.absoluteFill}
               />
-              <BreathingCircle />
+              {overlay === "breathing" ? (
+                <BreathingCircle />
+              ) : (
+                <CompassionFlow
+                  hintBottom={
+                    insets.bottom +
+                    CLOSE_BUTTON_BOTTOM +
+                    closeButtonHeight +
+                    CLOSE_BUTTON_MARGIN
+                  }
+                />
+              )}
             </>
           ) : (
             <ListOverlay

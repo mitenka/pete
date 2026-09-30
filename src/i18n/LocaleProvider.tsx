@@ -22,6 +22,7 @@ import {
 } from "./translations";
 import { stepMeta, stepText, type Step } from "../data/steps";
 import { overlayLists, type OverlayList } from "../data/overlayLists";
+import { compassionText, type CompassionText } from "../data/compassion";
 
 const STORAGE_KEY_LANGUAGE = "app.language";
 const STORAGE_KEY_GENDER = "app.gender";
@@ -53,6 +54,7 @@ interface LocaleContextValue {
   t: UIStrings;
   steps: Step[];
   overlays: Record<"rights" | "needs", OverlayList>;
+  compassion: CompassionText;
 }
 
 const LocaleContext = createContext<LocaleContextValue | null>(null);
@@ -108,6 +110,17 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
       overlays: {
         rights: { items: overlayLists[language].rights.items.map(g) },
         needs: { items: overlayLists[language].needs.items.map(g) },
+      },
+      compassion: {
+        intro: g(compassionText[language].intro),
+        stages: compassionText[language].stages.map((stage) => ({
+          label: g(stage.label),
+          phrases: stage.phrases.map((slot) =>
+            Array.isArray(slot) ? slot.map(g) : g(slot),
+          ),
+        })),
+        ending: g(compassionText[language].ending),
+        hint: g(compassionText[language].hint),
       },
     };
   }, [language, gender]);

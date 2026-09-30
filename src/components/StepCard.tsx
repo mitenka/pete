@@ -86,7 +86,14 @@ export default function StepCard({ step, index, scrollX, onOpenOverlay }: Props)
             ]}
           >
             <Text style={styles.breatheText}>
-              {{ breathing: t.breathe, rights: t.rightsButton, needs: t.needsButton }[step.overlay]}
+              {
+                {
+                  breathing: t.breathe,
+                  rights: t.rightsButton,
+                  needs: t.needsButton,
+                  compassion: t.compassionButton,
+                }[step.overlay]
+              }
             </Text>
           </Pressable>
         )}
